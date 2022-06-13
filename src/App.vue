@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted, defineComponent } from 'vue'
-const transcript = ref('')
-const equation = ref('')
+import StorageExercices from './pkg/Exercicies/Storage'
+import Dataset from './pkg/Equation/Dataset'
+
 const isRecording = ref(false)
+const runApp = ref(false)
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
 const sr = new Recognition()
 const showModal = ref(false);
@@ -10,67 +12,20 @@ const showResult = ref(false);
 const showConfig = ref(false);
 
 //config
-const numberOfRows = ref(5)
+const numberOfRows = ref(10)
 const maxFirstElement = ref(10)
-const baseNumer = ref(2)
+const baseNumer = ref(4)
+const speed = ref(50)
 
-class StorageExercices {
-  constructor(maxFirstElement, simulationBase, numerOfRows) {
-    this.responses = [];
-    this.simulations = [];
-	this.countAsserts = 0;
-	this.maxFirstElement = maxFirstElement.value;
-	this.simulationBase = simulationBase.value;
-	this.numerOfRows = numerOfRows.value;
-  }
-    configStorage(maxFirstElement, simulationBase, numerOfRows){
-		this.maxFirstElement = maxFirstElement.value;
-		this.simulationBase = simulationBase.value;
-		this.numerOfRows = numerOfRows.value;
-	}
-	buildSimulationExercicies(){
-    	this.responses = [];
-		this.simulations = [];
-		let simulationBase = this.simulationBase;
-		let numerOfRows = this.numerOfRows;
-		
-		for (let i=0; i<=numerOfRows; i++){
-			let row = {"id":i, "numberA":this.randomNumber(), "numberB":simulationBase,"result":0, "userResult":''}
-			let result = parseInt(row.numberA) + parseInt(row.numberB)
-			row.result = result
-			this.simulations.push(row)
-		}
-		return this.simulations;
-	}
-	randomNumber(){
-		let max = this.maxFirstElement
-		let min = 1
-		return Math.floor(Math.random() * max) + min;
-	}
-	buildResponse(row, response){
-		row.userResult = response;
-		return row;
-	}
-	pushResponse(response){
-		this.responses.push(response)
-	}
-	listResponses(){
-		this.countAsserts = 0;
-		
-		for (let i=0; i < this.responses.length; i++){
-			this.responses[i].assert = false
-			if (this.responses[i].result == this.responses[i].userResult){
-				this.responses[i].assert = true
-				this.countAsserts++
-			}
-		}
-		return this.responses;
-	}
 
-}
 
 const simulationStorage = new StorageExercices(maxFirstElement, baseNumer, numberOfRows)
 var SimulationList = simulationStorage.buildSimulationExercicies()
+
+const dte = ref(new Dataset());
+var myDataEquation = dte.value
+myDataEquation.clean()
+
 
 var actualIndex = 0
 var actualRow = []
@@ -80,13 +35,12 @@ onMounted(() => {
 
 	sr.onstart = () => {
 		console.log('SR Started')
-		showModal.value=true
-		
-		equation.value = ''	
-		transcript.value = ''
+		myDataEquation.clean()
+
+		runApp.value = true
 
 		actualRow = SimulationList[actualIndex]
-		equation.value = actualRow
+		myDataEquation.setParameters(actualRow.numberA, actualRow.numberB)
 
 		isRecording.value = true
 		actualIndex++
@@ -96,18 +50,21 @@ onMounted(() => {
 		isRecording.value = false
 
 
-		let userResponse = simulationStorage.buildResponse(actualRow, transcript.value)
+		let userResponse = simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
 		simulationStorage.pushResponse(userResponse)
-		console.log(userResponse)
 
+		if (!runApp.value) {
+			console.log('stoped')
+			return false
+		}
 		setTimeout(() => {
 			showModal.value=false
 			if(actualIndex < numberOfRows.value){
-				setTimeout(() => sr.start(), 900)
+				setTimeout(() => sr.start(), getSpeed())
 			}else{
 				showResult.value=true
 			}
-		}, 1000)
+		}, getSpeed())
 	}
 	sr.onresult = (evt) => {
 		for (let i = 0; i < evt.results.length; i++) {
@@ -119,7 +76,7 @@ onMounted(() => {
 			.map(result => result.transcript)
 			.join('')
 		
-		transcript.value = t
+		myDataEquation.setUserResult(t)
 
 		sr.stop()
 
@@ -140,19 +97,25 @@ const CheckForCommand = (result) => {
 	}
 }
 const ToggleMic = () => {
-	if (isRecording.value) {
+	if (runApp.value) {
+		runApp.value = false
 		sr.stop()
 	} else {
 		SimulationList = simulationStorage.buildSimulationExercicies()
 		actualIndex = 0
 
-		sr.start()		
+		sr.start()
 	}
 }
 
 const SetConfigStorage = () =>{
 	showConfig.value = false
 	simulationStorage.configStorage(maxFirstElement, baseNumer, numberOfRows)
+}
+
+function getSpeed(){
+	let dif = 1000 - (speed.value * 10)
+	return dif
 }
 
 
@@ -166,20 +129,19 @@ import Modal from './components/ModalDialog.vue'
 		<div style="display: flex;width:600px;">
 			<button :class="`mic`" @click="ToggleMic">Iniciar</button>
 			<button @click="showConfig = true">Configurar</button>
+			<button @click="ToggleMic">Parar</button>
+		</div>
+
+		<div class="equation" >
+          <div>
+            <h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} + {{myDataEquation.numberB}}
+           = {{myDataEquation.userResult}}</h3>
+          </div>
+
 		</div>
 		
 
 		<Teleport to="body">
-			<!-- use the modal component, pass in the prop -->
-			<modal :show="showModal" @close="showModal = false">
-			<template #header>
-				<h3>{{equation.numberA}} + {{equation.numberB}}</h3>
-			</template>
-			<template #body>
-				<div>{{transcript}}</div>
-			</template>
-			</modal>
-
 			<modal :show="showResult" @close="showResult = false">
 			<template #header>
 				<h3>Resultado</h3>
@@ -234,6 +196,15 @@ import Modal from './components/ModalDialog.vue'
 						style="float:right"
                 	/>
 				</div>
+				<div style="display: flow-root;">
+				<span>Velocidade:</span>
+					<input 
+						type="range" 
+						v-model="speed"
+						style="float:right"
+						min="1" max="99"
+                	/>
+				</div>
 			</template>
 			</modal>
 		</Teleport>
@@ -254,6 +225,9 @@ import Modal from './components/ModalDialog.vue'
 body {
 	background: #281936;
 	color: #FFF;
+}
+.equation{
+	font-size: 35pt; display: flex;width:600px;margin-top: 10%;margin-left: 35%;
 }
     .correto{
         border-color: green;
