@@ -1,6 +1,5 @@
 #api or front node_modules
 node_modules/
-dist/
 
 #db data
 data/
