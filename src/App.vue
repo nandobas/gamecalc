@@ -1,3 +1,4 @@
+
 <script setup>
 import { ref, onMounted, defineComponent } from 'vue'
 import StorageExercices from './pkg/Exercicies/Storage'
@@ -10,6 +11,7 @@ const sr = new Recognition()
 const showModal = ref(false);
 const showResult = ref(false);
 const showConfig = ref(false);
+const btnStart = ref(false);
 
 //config
 const numberOfRows = ref(10)
@@ -96,12 +98,17 @@ const CheckForCommand = (result) => {
 	}
 }
 const ToggleMic = () => {
+	let inputStart = document.getElementById('btnStart');
 	if (runApp.value) {
 		runApp.value = false
 		sr.stop()
+        inputStart.classList.remove("btn-stop")
+        inputStart.classList.add("btn-start")
 	} else {
 		SimulationList = simulationStorage.buildSimulationExercicies()
 		actualIndex = 0
+        inputStart.classList.remove("btn-start")
+        inputStart.classList.add("btn-stop")
 
 		sr.start()
 	}
@@ -129,15 +136,46 @@ const Stop = ()=>{
 import Modal from './components/ModalDialog.vue'
 </script>
 
+<style>
+	.btn-start{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/play-pause-button.png');
+		background-repeat: no-repeat;
+		background-position-y: -20px;
+		background-position-x: -130px;
+  		background-size: 280px 160px;
+		background-color: transparent;
+	}
+	.btn-stop{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/play-pause-button.png');
+		background-repeat: no-repeat;
+		background-position-y: -20px;
+		background-position-x: -7px;
+  		background-size: 280px 160px;
+		background-color: transparent;
+	}
+	.btn-configurar{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/configure-vector.png');
+		background-repeat: no-repeat;
+  		background-size: 100px;
+		background-color: transparent;
+		float:right;
+	}
+</style>
 <template>
 	<div class="app">
     <div>
-
-		<div style="display: flex;width:600px;">
-			<button :class="`mic`" @click="ToggleMic" v-if="!runApp">Iniciar</button>
-			<button @click="showConfig = true" v-if="!runApp">Configurar</button>
-			<button @click="ToggleMic" v-if="runApp">Parar</button>
-		</div>
+		
+			<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
+			<button class="btn-configurar" @click="showConfig = true" v-if="!runApp"></button>
 
 		<div class="container" >
 			<div class="col1"></div>
@@ -226,8 +264,6 @@ import Modal from './components/ModalDialog.vue'
 			</template>
 			</modal>
 		</Teleport>
-
-
 
     </div>
 	</div>
