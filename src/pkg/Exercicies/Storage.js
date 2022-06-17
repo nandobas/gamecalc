@@ -29,7 +29,8 @@ class Storage {
             };
         
           
-          for (let i=0; i<=numerOfRows; i++){
+          for (let i=0; i<=numerOfRows; i++){             
+            let numberA = this.randomNumber()
               let row = {"id":i, "numberA":this.randomNumber(), "numberB":simulationBase, "calcOperator":calcOperator,"result":0, "userResult":''}
               var a = parseInt(row.numberA)
               var b = parseInt(row.numberB)
@@ -40,9 +41,21 @@ class Storage {
           return this.simulations;
       }
       randomNumber(){
-          let max = this.maxFirstElement
-          let min = 1
-          return Math.floor(Math.random() * max) + min;
+        let simulationBase = this.simulationBase;
+        let calcOperator = this.calcOperator;
+
+        let max = this.maxFirstElement
+        let min = 1
+        let random = Math.floor(Math.random() * max) + min;
+
+        if (calcOperator === '-'){
+            random = 0
+            console.log('operator -')
+            while (random < simulationBase) {
+                random = Math.floor(Math.random() * max) + min;
+            }
+        }
+        return random
       }
       buildResponse(row, response){
           row.userResult = response;

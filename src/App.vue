@@ -17,7 +17,7 @@ const maxFirstElement = ref(10)
 const baseNumer = ref(4)
 const speed = ref(80)
 const calcOperator = ref('+')
-const calcOperators = ref(['+','-','*','/'])
+const calcOperators = ref(['+','-','*'])
 
 const simulationStorage = new StorageExercices(maxFirstElement, baseNumer, numberOfRows, calcOperator)
 var SimulationList = simulationStorage.buildSimulationExercicies()
@@ -60,8 +60,8 @@ onMounted(() => {
 			showModal.value=false
 			if(actualIndex < numberOfRows.value){
 				setTimeout(() => sr.start(), getSpeed())
-			}else{
-				showResult.value=true
+			}else{				
+				Stop()
 			}
 		}, getSpeed())
 	}
@@ -121,6 +121,7 @@ const Stop = ()=>{
 	myDataEquation.clean()
 	actualIndex = 0
 	actualRow = []
+	runApp.value = false
 	showResult.value=true
 }
 
@@ -161,7 +162,7 @@ import Modal from './components/ModalDialog.vue'
 						<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
 							<div>
 								<div style="width:600px;float:left;display:block;">
-									<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> + 
+									<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
 									<span style="width:80px">{{linha.numberB}}</span> = 
 									<span style="width:80px" :class="linha.assert ? 'correto' : 'errado'">
 									{{linha.userResult}}									
