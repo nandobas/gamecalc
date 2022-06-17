@@ -15,7 +15,7 @@ const showConfig = ref(false);
 const numberOfRows = ref(10)
 const maxFirstElement = ref(10)
 const baseNumer = ref(4)
-const speed = ref(50)
+const speed = ref(80)
 
 
 
@@ -25,7 +25,6 @@ var SimulationList = simulationStorage.buildSimulationExercicies()
 const dte = ref(new Dataset());
 var myDataEquation = dte.value
 myDataEquation.clean()
-
 
 var actualIndex = 0
 var actualRow = []
@@ -49,12 +48,12 @@ onMounted(() => {
 		console.log('SR Stopped')
 		isRecording.value = false
 
-
 		let userResponse = simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
 		simulationStorage.pushResponse(userResponse)
 
 		if (!runApp.value) {
 			console.log('stoped')
+			Stop()
 			return false
 		}
 		setTimeout(() => {
@@ -118,6 +117,13 @@ function getSpeed(){
 	return dif
 }
 
+const Stop = ()=>{
+	myDataEquation.clean()
+	actualIndex = 0
+	actualRow = []
+	showResult.value=true
+}
+
 
 import Modal from './components/ModalDialog.vue'
 </script>
@@ -127,17 +133,20 @@ import Modal from './components/ModalDialog.vue'
     <div>
 
 		<div style="display: flex;width:600px;">
-			<button :class="`mic`" @click="ToggleMic">Iniciar</button>
-			<button @click="showConfig = true">Configurar</button>
-			<button @click="ToggleMic">Parar</button>
+			<button :class="`mic`" @click="ToggleMic" v-if="!runApp">Iniciar</button>
+			<button @click="showConfig = true" v-if="!runApp">Configurar</button>
+			<button @click="ToggleMic" v-if="runApp">Parar</button>
 		</div>
 
-		<div class="equation" >
-          <div>
-            <h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} + {{myDataEquation.numberB}}
-           = {{myDataEquation.userResult}}</h3>
-          </div>
-
+		<div class="container" >
+			<div class="col1"></div>
+			<div class="equation col6" >
+			<div>
+				<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} + {{myDataEquation.numberB}}
+			= {{myDataEquation.userResult}}</h3>
+			</div>
+			</div>
+			<div class="col1"></div>
 		</div>
 		
 
@@ -226,8 +235,22 @@ body {
 	background: #281936;
 	color: #FFF;
 }
+.container{
+	display: flex;width:100%;
+}
+.col1{
+	width: 8.333333333%;
+}
+.col3{
+	width: 25%;
+}
+.col6{
+	width: 83.333333334%;
+}
 .equation{
-	font-size: 35pt; display: flex;width:600px;margin-top: 10%;margin-left: 35%;
+	margin-top:10%;
+	font-size: 30pt;
+	text-align: center;
 }
     .correto{
         border-color: green;
