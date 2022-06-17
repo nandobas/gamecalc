@@ -1,27 +1,39 @@
 export default 
 class Storage {
-    constructor(maxFirstElement, simulationBase, numerOfRows) {
+    constructor(maxFirstElement, simulationBase, numerOfRows, calcOperator) {
       this.responses = [];
       this.simulations = [];
       this.countAsserts = 0;
       this.maxFirstElement = maxFirstElement.value;
       this.simulationBase = simulationBase.value;
       this.numerOfRows = numerOfRows.value;
+      this.calcOperator = calcOperator.value;
     }
-      configStorage(maxFirstElement, simulationBase, numerOfRows){
+      configStorage(maxFirstElement, simulationBase, numerOfRows, calcOperator){
           this.maxFirstElement = maxFirstElement.value;
           this.simulationBase = simulationBase.value;
           this.numerOfRows = numerOfRows.value;
+          this.calcOperator = calcOperator.value;
       }
       buildSimulationExercicies(){
           this.responses = [];
           this.simulations = [];
           let simulationBase = this.simulationBase;
           let numerOfRows = this.numerOfRows;
+          let calcOperator = this.calcOperator;
+          var operators = {
+            '+': function(a, b) { return a + b },
+            '-': function(a, b) { return a - b },
+            '*': function(a, b) { return a * b },
+            '/': function(a, b) { return a / b },
+            };
+        
           
           for (let i=0; i<=numerOfRows; i++){
-              let row = {"id":i, "numberA":this.randomNumber(), "numberB":simulationBase,"result":0, "userResult":''}
-              let result = parseInt(row.numberA) + parseInt(row.numberB)
+              let row = {"id":i, "numberA":this.randomNumber(), "numberB":simulationBase, "calcOperator":calcOperator,"result":0, "userResult":''}
+              var a = parseInt(row.numberA)
+              var b = parseInt(row.numberB)
+              let result = operators[calcOperator](a, b);
               row.result = result
               this.simulations.push(row)
           }

@@ -16,10 +16,10 @@ const numberOfRows = ref(10)
 const maxFirstElement = ref(10)
 const baseNumer = ref(4)
 const speed = ref(80)
+const calcOperator = ref('+')
+const calcOperators = ref(['+','-','*','/'])
 
-
-
-const simulationStorage = new StorageExercices(maxFirstElement, baseNumer, numberOfRows)
+const simulationStorage = new StorageExercices(maxFirstElement, baseNumer, numberOfRows, calcOperator)
 var SimulationList = simulationStorage.buildSimulationExercicies()
 
 const dte = ref(new Dataset());
@@ -39,7 +39,7 @@ onMounted(() => {
 		runApp.value = true
 
 		actualRow = SimulationList[actualIndex]
-		myDataEquation.setParameters(actualRow.numberA, actualRow.numberB)
+		myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
 
 		isRecording.value = true
 		actualIndex++
@@ -109,7 +109,7 @@ const ToggleMic = () => {
 
 const SetConfigStorage = () =>{
 	showConfig.value = false
-	simulationStorage.configStorage(maxFirstElement, baseNumer, numberOfRows)
+	simulationStorage.configStorage(maxFirstElement, baseNumer, numberOfRows, calcOperator)
 }
 
 function getSpeed(){
@@ -142,7 +142,7 @@ import Modal from './components/ModalDialog.vue'
 			<div class="col1"></div>
 			<div class="equation col6" >
 			<div>
-				<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} + {{myDataEquation.numberB}}
+				<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} {{myDataEquation.calcOperator}} {{myDataEquation.numberB}}
 			= {{myDataEquation.userResult}}</h3>
 			</div>
 			</div>
@@ -196,6 +196,14 @@ import Modal from './components/ModalDialog.vue'
 						v-model="baseNumer" 
 						style="float:right"
                 	/>
+				</div>
+				<div style="display: flow-root;">
+				<span>Operação:</span>
+					<select style="width:181px;float:right" v-model="calcOperator">
+						<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
+							{{item}}
+						</option>
+					</select>
 				</div>
 				<div style="display: flow-root;">
 				<span>Número de questões:</span>

@@ -1,8 +1,9 @@
 export default 
 class DataEquation{	
-    setParameters(numberA, numberB) {
+    setParameters(numberA, numberB, calcOperator) {
 		this.numberA = numberA
 		this.numberB = numberB
+		this.calcOperator = calcOperator
 	}
     setUserResult(result) {
 		this.userResult = result
@@ -14,6 +15,7 @@ class DataEquation{
 	clean(){
 		this.numberA = ''
 		this.numberB = ''
+		this.calcOperator = ''
 		this.userResult = ''
 	}
 }
