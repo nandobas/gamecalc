@@ -136,46 +136,13 @@ const Stop = ()=>{
 import Modal from './components/ModalDialog.vue'
 </script>
 
-<style>
-	.btn-start{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -130px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-stop{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -7px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-configurar{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/configure-vector.png');
-		background-repeat: no-repeat;
-  		background-size: 100px;
-		background-color: transparent;
-		float:right;
-	}
-</style>
 <template>
 	<div class="app">
     <div>
-		
+		<div class="display:flex;width:600px;" >		
 			<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
 			<button class="btn-configurar" @click="showConfig = true" v-if="!runApp"></button>
+		</div>
 
 		<div class="container" >
 			<div class="col1"></div>
@@ -215,11 +182,9 @@ import Modal from './components/ModalDialog.vue'
 			</template>
 			</modal>
 
-			<modal :show="showConfig" @close="SetConfigStorage">
-			<template #header>
-				<h3>Configurar</h3>
-			</template>
-			<template #body>
+		<div class="container" v-if="showConfig">
+			<div class="col1" ></div>
+		<div class="config col6">
 				<div style="display: flow-root;">
 					<span>Número máximo do primeiro elemento:</span>
 					<input 
@@ -261,8 +226,12 @@ import Modal from './components/ModalDialog.vue'
 						min="1" max="99"
                 	/>
 				</div>
-			</template>
-			</modal>
+              <button
+                class="modal-default-button"
+                @click="SetConfigStorage()"
+              >OK</button>
+			</div>
+		</div>
 		</Teleport>
 
     </div>
@@ -279,6 +248,10 @@ import Modal from './components/ModalDialog.vue'
 body {
 	background: #281936;
 	color: #FFF;
+}
+.config{
+	width: 90%;
+	background-color: #865eac;
 }
 .container{
 	display: flex;width:100%;
@@ -313,4 +286,36 @@ body {
         color:rgb(29, 32, 34);
 		margin-left: 10px;
     }
+	.btn-start{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/play-pause-button.png');
+		background-repeat: no-repeat;
+		background-position-y: -20px;
+		background-position-x: -130px;
+  		background-size: 280px 160px;
+		background-color: transparent;
+	}
+	.btn-stop{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/play-pause-button.png');
+		background-repeat: no-repeat;
+		background-position-y: -20px;
+		background-position-x: -7px;
+  		background-size: 280px 160px;
+		background-color: transparent;
+	}
+	.btn-configurar{
+		border: none;
+		width:140px;
+		height: 120px;
+		background-image: url('public/configure-vector.png');
+		background-repeat: no-repeat;
+  		background-size: 100px;
+		background-color: transparent;
+		float:right;
+	}
 </style>
