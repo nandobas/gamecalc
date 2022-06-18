@@ -141,6 +141,17 @@ const Stop = ()=>{
 	runApp.value = false
 	TogleStartStop()
 }
+
+const isNumber = (evt)=>{
+	console.log('key press');	
+	evt = (evt) ? evt : window.event;
+	var charCode = (evt.which) ? evt.which : evt.keyCode;
+	if (String.fromCharCode(charCode).match(/[^0-9]/g)) {
+		evt.preventDefault();
+	} else {
+		return true;
+	}
+}
 </script>
 
 <template>
@@ -198,6 +209,8 @@ const Stop = ()=>{
 					<input 
 						type="text" 
 						v-model="maxFirstElement"
+						maxlength="3"
+						v-on:keypress="isNumber"
 						style="float:right;width: 120px;"
                 	/>
 				</div>
@@ -205,7 +218,9 @@ const Stop = ()=>{
 				<span>Base (segundo elemento):</span>
 					<input 
 						type="text" 
-						v-model="baseNumer" 
+						v-model="baseNumer"
+						maxlength="2"
+						v-on:keypress="isNumber"
 						style="float:right;width: 120px;"
                 	/>
 				</div>
@@ -222,6 +237,8 @@ const Stop = ()=>{
 					<input 
 						type="text" 
 						v-model="numberOfRows"
+						maxlength="2"
+						v-on:keypress="isNumber"
 						style="float:right;width: 120px;"
                 	/>
 				</div>
