@@ -153,15 +153,12 @@ import Modal from './components/ModalDialog.vue'
 			</div>
 			</div>
 			<div class="col1"></div>
-		</div>
-		
+		</div>		
 
-		<Teleport to="body">
-			<modal :show="showResult" @close="showResult = false">
-			<template #header>
-				<h3>Resultado</h3>
-			</template>
-			<template #body>
+
+		<div class="container" v-if="showResult">
+			<div class="col1" ></div>
+			<div class="result col6">
 				<div>
 					<ul>
 						<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
@@ -179,18 +176,22 @@ import Modal from './components/ModalDialog.vue'
 					</ul>
 					<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
 				</div>
-			</template>
-			</modal>
+              <button
+                class="modal-default-button"
+                @click="showResult=false"
+              >Ok</button>
+			</div>
+		</div>
 
 		<div class="container" v-if="showConfig">
 			<div class="col1" ></div>
-		<div class="config col6">
+			<div class="config col6">
 				<div style="display: flow-root;">
-					<span>Número máximo do primeiro elemento:</span>
+					<span>Limite primeiro elemento:</span>
 					<input 
 						type="text" 
 						v-model="maxFirstElement"
-						style="float:right"
+						style="float:right;width: 120px;"
                 	/>
 				</div>
 				<div style="display: flow-root;">
@@ -198,12 +199,12 @@ import Modal from './components/ModalDialog.vue'
 					<input 
 						type="text" 
 						v-model="baseNumer" 
-						style="float:right"
+						style="float:right;width: 120px;"
                 	/>
 				</div>
 				<div style="display: flow-root;">
 				<span>Operação:</span>
-					<select style="width:181px;float:right" v-model="calcOperator">
+					<select style="width:120px;float:right" v-model="calcOperator">
 						<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
 							{{item}}
 						</option>
@@ -214,7 +215,7 @@ import Modal from './components/ModalDialog.vue'
 					<input 
 						type="text" 
 						v-model="numberOfRows"
-						style="float:right"
+						style="float:right;width: 120px;"
                 	/>
 				</div>
 				<div style="display: flow-root;">
@@ -229,10 +230,9 @@ import Modal from './components/ModalDialog.vue'
               <button
                 class="modal-default-button"
                 @click="SetConfigStorage()"
-              >OK</button>
+              >Salvar</button>
 			</div>
 		</div>
-		</Teleport>
 
     </div>
 	</div>
@@ -250,6 +250,11 @@ body {
 	color: #FFF;
 }
 .config{
+	width: 90%;
+	background-color: #865eac;
+}
+.result{
+	margin-top:10px;
 	width: 90%;
 	background-color: #865eac;
 }
