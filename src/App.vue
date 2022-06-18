@@ -37,8 +37,10 @@ onMounted(() => {
 	sr.onstart = () => {
 		console.log('SR Started')
 		myDataEquation.clean()
+		showResult.value=false
 
 		runApp.value = true
+		TogleStartStop()
 
 		actualRow = SimulationList[actualIndex]
 		myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
@@ -56,6 +58,7 @@ onMounted(() => {
 		if (!runApp.value) {
 			console.log('stoped')
 			Stop()
+			showResult.value=true
 			return false
 		}
 		setTimeout(() => {
@@ -64,6 +67,7 @@ onMounted(() => {
 				setTimeout(() => sr.start(), getSpeed())
 			}else{				
 				Stop()
+				showResult.value=true
 			}
 		}, getSpeed())
 	}
@@ -80,8 +84,6 @@ onMounted(() => {
 		myDataEquation.setUserResult(t)
 
 		sr.stop()
-
-
 	}
 })
 const CheckForCommand = (result) => {
@@ -98,20 +100,28 @@ const CheckForCommand = (result) => {
 	}
 }
 const ToggleMic = () => {
-	let inputStart = document.getElementById('btnStart');
 	if (runApp.value) {
 		runApp.value = false
 		sr.stop()
-        inputStart.classList.remove("btn-stop")
-        inputStart.classList.add("btn-start")
 	} else {
 		SimulationList = simulationStorage.buildSimulationExercicies()
 		actualIndex = 0
-        inputStart.classList.remove("btn-start")
-        inputStart.classList.add("btn-stop")
 
 		sr.start()
 	}
+}
+
+const TogleStartStop = () =>{
+	let inputStart = document.getElementById('btnStart');
+	if (runApp.value) {
+        inputStart.classList.remove("btn-start")
+        inputStart.classList.add("btn-stop")
+	} else {
+        inputStart.classList.remove("btn-stop")
+        inputStart.classList.add("btn-start")
+	}
+
+
 }
 
 const SetConfigStorage = () =>{
@@ -129,11 +139,8 @@ const Stop = ()=>{
 	actualIndex = 0
 	actualRow = []
 	runApp.value = false
-	showResult.value=true
+	TogleStartStop()
 }
-
-
-import Modal from './components/ModalDialog.vue'
 </script>
 
 <template>
@@ -141,7 +148,7 @@ import Modal from './components/ModalDialog.vue'
     <div>
 		<div class="display:flex;width:600px;" >		
 			<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
-			<button class="btn-configurar" @click="showConfig = true" v-if="!runApp"></button>
+			<button class="btn-configurar" @click="showConfig = true;showResult=false;" v-if="!runApp"></button>
 		</div>
 
 		<div class="container" >
