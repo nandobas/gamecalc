@@ -155,110 +155,110 @@ const isNumber = (evt)=>{
 </script>
 
 <template>
-	<div class="app">
-    <div>
-		<div class="display:flex;width:600px;" >		
-			<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
-			<button class="btn-configurar" @click="showConfig = true;showResult=false;" v-if="!runApp"></button>
-		</div>
-
-		<div class="container" >
-			<div class="col1"></div>
-			<div class="equation col6" >
-			<div>
-				<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} {{myDataEquation.calcOperator}} {{myDataEquation.numberB}}
-			= {{myDataEquation.userResult}}</h3>
+	<div class="app wrapper">
+		<div>
+			<div class="display:flex;width:600px;" >		
+				<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
+				<button class="btn-configurar" @click="showConfig = true;showResult=false;" v-if="!runApp"></button>
 			</div>
-			</div>
-			<div class="col1"></div>
-		</div>		
 
-
-		<div class="container" v-if="showResult">
-			<div class="col1" ></div>
-			<div class="result col6">
+			<div class="container" >
+				<div class="col1"></div>
+				<div class="equation col6" >
 				<div>
-					<ul>
-						<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
-							<div>
-								<div style="width:600px;float:left;display:block;">
-									<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
-									<span style="width:80px">{{linha.numberB}}</span> = 
-									<span style="width:80px" :class="linha.assert ? 'correto' : 'errado'">
-									{{linha.userResult}}									
-									</span>
-									<span v-if="!linha.assert" class="atencao">correto: {{linha.result}}</span>			
+					<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} {{myDataEquation.calcOperator}} {{myDataEquation.numberB}}
+				= {{myDataEquation.userResult}}</h3>
+				</div>
+				</div>
+				<div class="col1"></div>
+			</div>		
+
+
+			<div class="container" v-if="showResult">
+				<div class="col1" ></div>
+				<div class="result col6">
+					<div>
+						<ul>
+							<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
+								<div>
+									<div style="width:600px;float:left;display:block;">
+										<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
+										<span style="width:80px">{{linha.numberB}}</span> = 
+										<span style="width:80px" :class="linha.assert ? 'correto' : 'errado'">
+										{{linha.userResult}}									
+										</span>
+										<span v-if="!linha.assert" class="atencao">correto: {{linha.result}}</span>			
+									</div>
 								</div>
-							</div>
-						</li>
-					</ul>
-					<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
+							</li>
+						</ul>
+						<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
+					</div>
+				<button
+					class="modal-default-button"
+					@click="showResult=false"
+				>Ok</button>
 				</div>
-              <button
-                class="modal-default-button"
-                @click="showResult=false"
-              >Ok</button>
+			</div>
+
+			<div class="container" v-if="showConfig">
+				<div class="col1" ></div>
+				<div class="config col6">
+					<div style="display: flow-root;">
+						<span>Limite primeiro elemento:</span>
+						<input 
+							type="text" 
+							v-model="maxFirstElement"
+							maxlength="3"
+							v-on:keypress="isNumber"
+							style="float:right;width: 120px;"
+						/>
+					</div>
+					<div style="display: flow-root;">
+					<span>Base (segundo elemento):</span>
+						<input 
+							type="text" 
+							v-model="baseNumer"
+							maxlength="2"
+							v-on:keypress="isNumber"
+							style="float:right;width: 120px;"
+						/>
+					</div>
+					<div style="display: flow-root;">
+					<span>Operação:</span>
+						<select style="width:120px;float:right" v-model="calcOperator">
+							<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
+								{{item}}
+							</option>
+						</select>
+					</div>
+					<div style="display: flow-root;">
+					<span>Número de questões:</span>
+						<input 
+							type="text" 
+							v-model="numberOfRows"
+							maxlength="2"
+							v-on:keypress="isNumber"
+							style="float:right;width: 120px;"
+						/>
+					</div>
+					<div style="display: flow-root;">
+					<span>Velocidade:</span>
+						<input 
+							type="range" 
+							v-model="speed"
+							style="float:right"
+							min="1" max="99"
+						/>
+					</div>
+				<button
+					class="modal-default-button"
+					@click="SetConfigStorage()"
+				>Salvar</button>
+				</div>
 			</div>
 		</div>
 
-		<div class="container" v-if="showConfig">
-			<div class="col1" ></div>
-			<div class="config col6">
-				<div style="display: flow-root;">
-					<span>Limite primeiro elemento:</span>
-					<input 
-						type="text" 
-						v-model="maxFirstElement"
-						maxlength="3"
-						v-on:keypress="isNumber"
-						style="float:right;width: 120px;"
-                	/>
-				</div>
-				<div style="display: flow-root;">
-				<span>Base (segundo elemento):</span>
-					<input 
-						type="text" 
-						v-model="baseNumer"
-						maxlength="2"
-						v-on:keypress="isNumber"
-						style="float:right;width: 120px;"
-                	/>
-				</div>
-				<div style="display: flow-root;">
-				<span>Operação:</span>
-					<select style="width:120px;float:right" v-model="calcOperator">
-						<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
-							{{item}}
-						</option>
-					</select>
-				</div>
-				<div style="display: flow-root;">
-				<span>Número de questões:</span>
-					<input 
-						type="text" 
-						v-model="numberOfRows"
-						maxlength="2"
-						v-on:keypress="isNumber"
-						style="float:right;width: 120px;"
-                	/>
-				</div>
-				<div style="display: flow-root;">
-				<span>Velocidade:</span>
-					<input 
-						type="range" 
-						v-model="speed"
-						style="float:right"
-						min="1" max="99"
-                	/>
-				</div>
-              <button
-                class="modal-default-button"
-                @click="SetConfigStorage()"
-              >Salvar</button>
-			</div>
-		</div>
-
-    </div>
 	</div>
 </template>
 
@@ -269,10 +269,24 @@ const isNumber = (evt)=>{
 	box-sizing: border-box;
 	font-family: 'Fira sans', sans-serif;
 }
-body {
+html, body {
 	background: #281936;
 	color: #FFF;
+  	height: 100%;
+  	margin: 0;
 }
+#app {
+  min-height: 100%;
+  margin-bottom: -50px;
+}
+.footer {
+	padding: 5px;
+	background-color:#865eac;
+	height:50px;
+	width: 100%;
+	text-align:center;
+}
+
 .config{
 	width: 90%;
 	background-color: #865eac;

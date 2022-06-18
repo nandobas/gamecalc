@@ -10,10 +10,16 @@ class Storage {
       this.calcOperator = calcOperator.value;
     }
       configStorage(maxFirstElement, simulationBase, numerOfRows, calcOperator){
-          this.maxFirstElement = maxFirstElement.value;
-          this.simulationBase = simulationBase.value;
-          this.numerOfRows = numerOfRows.value;
+          this.maxFirstElement = this.validOrOne(maxFirstElement);
+          this.simulationBase = this.validOrOne(simulationBase);
+          this.numerOfRows = this.validOrOne(numerOfRows);
           this.calcOperator = calcOperator.value;
+      }
+      validOrOne(e){
+        if(e.value == null || e.value == 0 || e.value == ''){
+            e.value = 1;
+        }
+        return e.value;
       }
       buildSimulationExercicies(){
           this.responses = [];
