@@ -6,7 +6,7 @@ class DataEquation{
 		this.calcOperator = calcOperator
 	}
     setUserResult(result) {
-		this.userResult = result
+		this.userResult = result.match(/\d+/)[0]
 		console.log(result)
 	}
 	getParameterA(){

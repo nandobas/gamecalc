@@ -35,25 +35,10 @@ onMounted(() => {
 	sr.interimResults = false
 
 	sr.onstart = () => {
-		console.log('SR Started')
-		myDataEquation.clean()
-		showResult.value=false
-
-		runApp.value = true
-		TogleStartStop()
-
-		actualRow = SimulationList[actualIndex]
-		myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
-
-		isRecording.value = true
-		actualIndex++
+		onStart()
 	}
 	sr.onend = () => {
 		console.log('SR Stopped')
-		isRecording.value = false
-
-		let userResponse = simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
-		simulationStorage.pushResponse(userResponse)
 
 		if (!runApp.value) {
 			console.log('stoped')
@@ -61,31 +46,61 @@ onMounted(() => {
 			showResult.value=true
 			return false
 		}
-		setTimeout(() => {
-			showModal.value=false
-			if(actualIndex < numberOfRows.value){
-				setTimeout(() => sr.start(), getSpeed())
-			}else{				
-				Stop()
-				showResult.value=true
-			}
-		}, getSpeed())
+		
+		onEnd()
 	}
 	sr.onresult = (evt) => {
-		for (let i = 0; i < evt.results.length; i++) {
-			const result = evt.results[i]
-			if (result.isFinal) CheckForCommand(result)
-		}
-		const t = Array.from(evt.results)
-			.map(result => result[0])
-			.map(result => result.transcript)
-			.join('')
-		
-		myDataEquation.setUserResult(t)
-
+		onResult(evt)
 		sr.stop()
 	}
 })
+
+function onStart() {
+  console.log('SR Started')
+  myDataEquation.clean()
+  showResult.value=false
+
+  runApp.value=true
+  TogleStartStop()
+
+  actualRow=SimulationList[actualIndex]
+  myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
+
+  isRecording.value=true
+  actualIndex++
+}
+
+function onResult(evt) {
+  for(let i=0;i<evt.results.length;i++) {
+    const result=evt.results[i]
+    if(result.isFinal)
+      CheckForCommand(result)
+  }
+  const t=Array.from(evt.results)
+    .map(result => result[0])
+    .map(result => result.transcript)
+    .join('')
+
+  myDataEquation.setUserResult(t)
+}
+
+function onEnd() {
+  isRecording.value=false
+
+  let userResponse=simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
+  simulationStorage.pushResponse(userResponse)
+
+  setTimeout(() => {
+    showModal.value=false
+    if(actualIndex<numberOfRows.value) {
+      setTimeout(() => sr.start(), getSpeed())
+    } else {
+      Stop()
+      showResult.value=true
+    }
+  }, getSpeed())
+}
+
 const CheckForCommand = (result) => {
 	const t = result[0].transcript;
 	if (t.includes('stop recording')) {
@@ -262,103 +277,6 @@ const isNumber = (evt)=>{
 	</div>
 </template>
 
-<style>
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	font-family: 'Fira sans', sans-serif;
-}
-html, body {
-	background: #281936;
-	color: #FFF;
-  	height: 100%;
-  	margin: 0;
-}
-#app {
-  min-height: 100%;
-  margin-bottom: -50px;
-}
-.footer {
-	padding: 5px;
-	background-color:#865eac;
-	height:50px;
-	width: 100%;
-	text-align:center;
-}
-
-.config{
-	width: 90%;
-	background-color: #865eac;
-}
-.result{
-	margin-top:10px;
-	width: 90%;
-	background-color: #865eac;
-}
-.container{
-	display: flex;width:100%;
-}
-.col1{
-	width: 8.333333333%;
-}
-.col3{
-	width: 25%;
-}
-.col6{
-	width: 83.333333334%;
-}
-.equation{
-	margin-top:10%;
-	font-size: 30pt;
-	text-align: center;
-}
-    .correto{
-        border-color: green;
-        background-color: darkgreen;
-        color:aliceblue
-    }
-    .errado{
-        border-color: red;
-        background-color: darkred;
-        color:aliceblue
-    }
-    .atencao{
-        border-color: rgb(229, 255, 0);
-        background-color: rgb(240, 221, 56);
-        color:rgb(29, 32, 34);
-		margin-left: 10px;
-    }
-	.btn-start{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -130px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-stop{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -7px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-configurar{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/configure-vector.png');
-		background-repeat: no-repeat;
-  		background-size: 100px;
-		background-color: transparent;
-		float:right;
-	}
+<style lang="css">
+@import "./App.css";
 </style>
