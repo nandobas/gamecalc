@@ -1,17 +1,16 @@
 
 <script setup>
-import { ref, onMounted, defineComponent } from 'vue'
+import { ref, onMounted } from 'vue'
 import StorageExercices from './pkg/Exercicies/Storage'
 import Dataset from './pkg/Equation/Dataset'
 
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
+const speechRecognition = new Recognition()
 const isRecording = ref(false)
 const runApp = ref(false)
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
-const sr = new Recognition()
 const showModal = ref(false);
 const showResult = ref(false);
 const showConfig = ref(false);
-const btnStart = ref(false);
 
 //config
 const numberOfRows = ref(10)
@@ -31,13 +30,13 @@ myDataEquation.clean()
 var actualIndex = 0
 var actualRow = []
 onMounted(() => {
-	sr.continuous = true
-	sr.interimResults = false
+	speechRecognition.continuous = true
+	speechRecognition.interimResults = false
 
-	sr.onstart = () => {
+	speechRecognition.onstart = () => {
 		onStart()
 	}
-	sr.onend = () => {
+	speechRecognition.onend = () => {
 		console.log('SR Stopped')
 
 		if (!runApp.value) {
@@ -49,9 +48,9 @@ onMounted(() => {
 		
 		onEnd()
 	}
-	sr.onresult = (evt) => {
+	speechRecognition.onresult = (evt) => {
 		onResult(evt)
-		sr.stop()
+		speechRecognition.stop()
 	}
 })
 
@@ -93,7 +92,7 @@ function onEnd() {
   setTimeout(() => {
     showModal.value=false
     if(actualIndex<numberOfRows.value) {
-      setTimeout(() => sr.start(), getSpeed())
+      setTimeout(() => speechRecognition.start(), getSpeed())
     } else {
       Stop()
       showResult.value=true
@@ -104,25 +103,25 @@ function onEnd() {
 const CheckForCommand = (result) => {
 	const t = result[0].transcript;
 	if (t.includes('stop recording')) {
-		sr.stop()
+		speechRecognition.stop()
 	} else if (
 		t.includes('what is the time') ||
 		t.includes('what\'s the time')
 	) {
-		sr.stop()
+		speechRecognition.stop()
 		alert(new Date().toLocaleTimeString())
-		setTimeout(() => sr.start(), 100)
+		setTimeout(() => speechRecognition.start(), 100)
 	}
 }
 const ToggleMic = () => {
 	if (runApp.value) {
 		runApp.value = false
-		sr.stop()
+		speechRecognition.stop()
 	} else {
 		SimulationList = simulationStorage.buildSimulationExercicies()
 		actualIndex = 0
 
-		sr.start()
+		speechRecognition.start()
 	}
 }
 
@@ -173,8 +172,8 @@ const isNumber = (evt)=>{
 	<div class="app wrapper">
 		<div>
 			<div class="display:flex;width:600px;" >		
-				<button id="btnStart" :class="`mic btn-start`" @click="ToggleMic"></button>
-				<button class="btn-configurar" @click="showConfig = true;showResult=false;" v-if="!runApp"></button>
+				<button id="btnStart" :class="`btn mic btn-start`" @click="ToggleMic">Iniciar</button>
+				<button id="btnConfigurar" :class="`btn`" @click="showConfig = true;showResult=false;" v-if="!runApp">Configurar</button>
 			</div>
 
 			<div class="container" >
