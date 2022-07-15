@@ -13,7 +13,7 @@ const showResult = ref(false);
 const showConfig = ref(false);
 
 //config
-const numberOfRows = ref(10)
+const numberOfRows = ref(5)
 const maxFirstElement = ref(10)
 const baseNumer = ref(4)
 const speed = ref(80)
@@ -37,7 +37,7 @@ onMounted(() => {
 		onStart()
 	}
 	speechRecognition.onend = () => {
-		console.log('SR Stopped')
+		console.log('speech recognition stopped')
 
 		if (!runApp.value) {
 			console.log('stoped')
@@ -55,7 +55,7 @@ onMounted(() => {
 })
 
 function onStart() {
-  console.log('SR Started')
+  console.log('speech recognition started')
   myDataEquation.clean()
   showResult.value=false
 
@@ -102,15 +102,11 @@ function onEnd() {
 
 const CheckForCommand = (result) => {
 	const t = result[0].transcript;
-	if (t.includes('stop recording')) {
-		speechRecognition.stop()
-	} else if (
-		t.includes('what is the time') ||
-		t.includes('what\'s the time')
-	) {
-		speechRecognition.stop()
-		alert(new Date().toLocaleTimeString())
-		setTimeout(() => speechRecognition.start(), 100)
+	if (t.includes('parar')) {
+		ToggleMic()
+	} else if(t.includes('tocar funk')){
+		ToggleMic()
+	 	window.open('https://www.youtube.com/watch?v=9cmuP8OBnnA', '_blank');
 	}
 }
 const ToggleMic = () => {
@@ -120,22 +116,27 @@ const ToggleMic = () => {
 	} else {
 		SimulationList = simulationStorage.buildSimulationExercicies()
 		actualIndex = 0
-
 		speechRecognition.start()
 	}
 }
 
 const TogleStartStop = () =>{
 	let inputStart = document.getElementById('btnStart');
+    inputStart.innerHTML="Iniciar"
 	if (runApp.value) {
-        inputStart.classList.remove("btn-start")
-        inputStart.classList.add("btn-stop")
-	} else {
-        inputStart.classList.remove("btn-stop")
-        inputStart.classList.add("btn-start")
+        inputStart.innerHTML="Parar"
 	}
+}
 
 
+const isNumber = (evt)=>{
+	evt = (evt) ? evt : window.event;
+	var charCode = (evt.which) ? evt.which : evt.keyCode;
+	if (String.fromCharCode(charCode).match(/[^0-9]/g)) {
+		evt.preventDefault();
+	} else {
+		return true;
+	}
 }
 
 const SetConfigStorage = () =>{
@@ -154,17 +155,6 @@ const Stop = ()=>{
 	actualRow = []
 	runApp.value = false
 	TogleStartStop()
-}
-
-const isNumber = (evt)=>{
-	console.log('key press');	
-	evt = (evt) ? evt : window.event;
-	var charCode = (evt.which) ? evt.which : evt.keyCode;
-	if (String.fromCharCode(charCode).match(/[^0-9]/g)) {
-		evt.preventDefault();
-	} else {
-		return true;
-	}
 }
 </script>
 
@@ -265,10 +255,10 @@ const isNumber = (evt)=>{
 							min="1" max="99"
 						/>
 					</div>
-				<button
-					class="modal-default-button"
-					@click="SetConfigStorage()"
-				>Salvar</button>
+					<button
+						class="modal-default-button"
+						@click="SetConfigStorage()"
+					>Salvar</button>
 				</div>
 			</div>
 		</div>
