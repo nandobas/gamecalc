@@ -1,4 +1,5 @@
 
+
 * {
 	margin: 0;
 	padding: 0;
@@ -6,8 +7,8 @@
 	font-family: 'Fira sans', sans-serif;
 }
 html, body {
-	background: #281936;
-	color: #FFF;
+	background: rgb(11, 61, 53);
+	color: rgb(242, 233, 233);
   	height: 100%;
   	margin: 0;
 }
@@ -17,10 +18,14 @@ html, body {
 }
 .footer {
 	padding: 5px;
-	background-color:#865eac;
 	height:50px;
 	width: 100%;
+	background: rgb(7, 36, 31);
 	text-align:center;
+	
+}
+.footer	a {
+  	color: rgb(202, 223, 239);
 }
 
 .config{
@@ -49,51 +54,27 @@ html, body {
 	font-size: 30pt;
 	text-align: center;
 }
-    .correto{
-        border-color: green;
-        background-color: darkgreen;
-        color:aliceblue
-    }
-    .errado{
-        border-color: red;
-        background-color: darkred;
-        color:aliceblue
-    }
-    .atencao{
-        border-color: rgb(229, 255, 0);
-        background-color: rgb(240, 221, 56);
-        color:rgb(29, 32, 34);
-		margin-left: 10px;
-    }
-	.btn-start{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -130px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-stop{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/play-pause-button.png');
-		background-repeat: no-repeat;
-		background-position-y: -20px;
-		background-position-x: -7px;
-  		background-size: 280px 160px;
-		background-color: transparent;
-	}
-	.btn-configurar{
-		border: none;
-		width:140px;
-		height: 120px;
-		background-image: url('public/configure-vector.png');
-		background-repeat: no-repeat;
-  		background-size: 100px;
-		background-color: transparent;
-		float:right;
-	}
+.correto{
+	border-color: green;
+	background-color: darkgreen;
+	color:aliceblue
+}
+.errado{
+	border-color: red;
+	background-color: darkred;
+	color:aliceblue
+}
+.atencao{
+	border-color: rgb(229, 255, 0);
+	background-color: rgb(240, 221, 56);
+	color:rgb(29, 32, 34);
+	margin-left: 10px;
+}
+.btn{
+	border: none;
+	width:100px;
+	height: 30px;
+	float: left;
+	cursor: pointer;
+	margin: 3px;
+}
