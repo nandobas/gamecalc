@@ -1,6 +1,5 @@
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 import StorageExercices from './pkg/Exercicies/Storage'
 import Dataset from './pkg/Equation/Dataset'
 
@@ -29,14 +28,14 @@ myDataEquation.clean()
 
 var actualIndex = 0
 var actualRow = []
-onMounted(() => {
+onMounted(()=>{
 	speechRecognition.continuous = true
 	speechRecognition.interimResults = false
 
-	speechRecognition.onstart = () => {
+	speechRecognition.onstart = ()=>{
 		onStart()
 	}
-	speechRecognition.onend = () => {
+	speechRecognition.onend = ()=>{
 		console.log('speech recognition stopped')
 
 		if (!runApp.value) {
@@ -48,67 +47,14 @@ onMounted(() => {
 		
 		onEnd()
 	}
-	speechRecognition.onresult = (evt) => {
+	speechRecognition.onresult = (evt)=>{
 		onResult(evt)
 		speechRecognition.stop()
 	}
+
+
 })
 
-function onStart() {
-  console.log('speech recognition started')
-  myDataEquation.clean()
-  showResult.value=false
-
-  runApp.value=true
-  TogleStartStop()
-
-  actualRow=SimulationList[actualIndex]
-  myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
-
-  isRecording.value=true
-  actualIndex++
-}
-
-function onResult(evt) {
-  for(let i=0;i<evt.results.length;i++) {
-    const result=evt.results[i]
-    if(result.isFinal)
-      CheckForCommand(result)
-  }
-  const t=Array.from(evt.results)
-    .map(result => result[0])
-    .map(result => result.transcript)
-    .join('')
-
-  myDataEquation.setUserResult(t)
-}
-
-function onEnd() {
-  isRecording.value=false
-
-  let userResponse=simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
-  simulationStorage.pushResponse(userResponse)
-
-  setTimeout(() => {
-    showModal.value=false
-    if(actualIndex<numberOfRows.value) {
-      setTimeout(() => speechRecognition.start(), getSpeed())
-    } else {
-      Stop()
-      showResult.value=true
-    }
-  }, getSpeed())
-}
-
-const CheckForCommand = (result) => {
-	const t = result[0].transcript;
-	if (t.includes('parar')) {
-		ToggleMic()
-	} else if(t.includes('tocar funk')){
-		ToggleMic()
-	 	window.open('https://www.youtube.com/watch?v=9cmuP8OBnnA', '_blank');
-	}
-}
 const ToggleMic = () => {
 	if (runApp.value) {
 		runApp.value = false
@@ -128,6 +74,69 @@ const TogleStartStop = () =>{
 	}
 }
 
+const Stop = ()=>{
+	myDataEquation.clean()
+	actualIndex = 0
+	actualRow = []
+	runApp.value = false
+	TogleStartStop()
+}
+
+function onStart() {
+  console.log('speech recognition started')
+  myDataEquation.clean()
+  showResult.value=false
+
+  runApp.value=true
+  TogleStartStop()
+
+  actualRow=SimulationList[actualIndex]
+  myDataEquation.setParameters(actualRow.numberA, actualRow.numberB, actualRow.calcOperator)
+
+  isRecording.value=true
+  actualIndex++
+}
+
+function onEnd() {
+  isRecording.value=false
+
+  let userResponse=simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
+  simulationStorage.pushResponse(userResponse)
+
+  setTimeout(() => {
+    showModal.value=false
+    if(actualIndex<numberOfRows.value) {
+      setTimeout(() => speechRecognition.start(), getSpeed())
+    } else {
+      Stop()
+      showResult.value=true
+    }
+  }, getSpeed())
+}
+
+function onResult(evt) {
+  for(let i=0;i<evt.results.length;i++) {
+    const result=evt.results[i]
+    if(result.isFinal)
+      CheckForCommand(result)
+  }
+  const t=Array.from(evt.results)
+    .map(result => result[0])
+    .map(result => result.transcript)
+    .join('')
+
+  myDataEquation.setUserResult(t)
+}
+
+const CheckForCommand = (result) => {
+	const t = result[0].transcript;
+	if(t.includes('parar')){
+		ToggleMic()
+	}else if(t.includes('tocar funk')){
+		ToggleMic()
+	 	window.open('https://www.youtube.com/watch?v=9cmuP8OBnnA', '_blank');
+	}
+}
 
 const isNumber = (evt)=>{
 	evt = (evt) ? evt : window.event;
@@ -149,117 +158,117 @@ function getSpeed(){
 	return dif
 }
 
-const Stop = ()=>{
-	myDataEquation.clean()
-	actualIndex = 0
-	actualRow = []
-	runApp.value = false
-	TogleStartStop()
-}
 </script>
 
+
 <template>
-	<div class="app wrapper">
-		<div>
-			<div class="display:flex;width:600px;" >		
-				<button id="btnStart" :class="`btn mic btn-start`" @click="ToggleMic">Iniciar</button>
-				<button id="btnConfigurar" :class="`btn`" @click="showConfig = true;showResult=false;" v-if="!runApp">Configurar</button>
-			</div>
+	<div class="app">
+		<div style="display:flex; width: 600px;">
+			<button id="btnStart" class="btn" @click="ToggleMic">Iniciar</button>
+			<button id="btnConfigurar" :class="`btn`" @click="showConfig = true;showResult=false;" v-if="!runApp">Configurar</button>
+		</div>
 
-			<div class="container" >
-				<div class="col1"></div>
-				<div class="equation col6" >
+
+		<div class="container" >
+			<div class="col1"></div>
+			<div class="equation col6" >
+			<div>
+				<h3 
+					v-if="myDataEquation.numberA">
+					{{myDataEquation.numberA}} 
+					{{myDataEquation.calcOperator}} 
+					{{myDataEquation.numberB}}
+					= 
+					{{myDataEquation.userResult}}
+				</h3>
+			</div>
+			</div>
+			<div class="col1"></div>
+		</div>
+		
+		<div class="container" v-if="showResult">
+			<div class="col1" ></div>
+			<div class="result col6">
 				<div>
-					<h3 v-if="myDataEquation.numberA">{{myDataEquation.numberA}} {{myDataEquation.calcOperator}} {{myDataEquation.numberB}}
-				= {{myDataEquation.userResult}}</h3>
-				</div>
-				</div>
-				<div class="col1"></div>
-			</div>		
-
-
-			<div class="container" v-if="showResult">
-				<div class="col1" ></div>
-				<div class="result col6">
-					<div>
-						<ul>
-							<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
-								<div>
-									<div style="width:600px;float:left;display:block;">
-										<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
-										<span style="width:80px">{{linha.numberB}}</span> = 
-										<span style="width:80px" :class="linha.assert ? 'correto' : 'errado'">
-										{{linha.userResult}}									
-										</span>
-										<span v-if="!linha.assert" class="atencao">correto: {{linha.result}}</span>			
-									</div>
+					<ul>
+						<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
+							<div>
+								<div style="width:600px;float:left;display:block;">
+									<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
+									<span style="width:80px">{{linha.numberB}}</span> = 
+									<span style="width:80px" :class="linha.assert ? 'correto' : 'errado'">
+									{{linha.userResult}}									
+									</span>
+									<span v-if="!linha.assert" class="atencao">correto: {{linha.result}}</span>			
 								</div>
-							</li>
-						</ul>
-						<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
-					</div>
-				<button
-					class="modal-default-button"
-					@click="showResult=false"
-				>Ok</button>
+							</div>
+						</li>
+					</ul>
+					<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
 				</div>
+			<button
+				class="btn"
+				@click="showResult=false"
+			>Ok</button>
 			</div>
+		</div>
 
-			<div class="container" v-if="showConfig">
-				<div class="col1" ></div>
-				<div class="config col6">
-					<div style="display: flow-root;">
-						<span>Limite primeiro elemento:</span>
-						<input 
-							type="text" 
-							v-model="maxFirstElement"
-							maxlength="3"
-							v-on:keypress="isNumber"
-							style="float:right;width: 120px;"
-						/>
-					</div>
-					<div style="display: flow-root;">
-					<span>Base (segundo elemento):</span>
-						<input 
-							type="text" 
-							v-model="baseNumer"
-							maxlength="2"
-							v-on:keypress="isNumber"
-							style="float:right;width: 120px;"
-						/>
-					</div>
-					<div style="display: flow-root;">
-					<span>Operação:</span>
-						<select style="width:120px;float:right" v-model="calcOperator">
-							<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
-								{{item}}
-							</option>
-						</select>
-					</div>
-					<div style="display: flow-root;">
-					<span>Número de questões:</span>
-						<input 
-							type="text" 
-							v-model="numberOfRows"
-							maxlength="2"
-							v-on:keypress="isNumber"
-							style="float:right;width: 120px;"
-						/>
-					</div>
-					<div style="display: flow-root;">
-					<span>Velocidade:</span>
-						<input 
-							type="range" 
-							v-model="speed"
-							style="float:right"
-							min="1" max="99"
-						/>
-					</div>
-					<button
-						class="modal-default-button"
-						@click="SetConfigStorage()"
-					>Salvar</button>
+
+
+		<div class="container" v-if="showConfig">
+			<div class="col1" ></div>
+			<div class="config col6">
+				<div style="display: flow-root;">
+					<span>Limite primeiro elemento:</span>
+					<input 
+						type="text" 
+						v-model="maxFirstElement"
+						maxlength="3"
+						v-on:keypress="isNumber"
+						style="float:right;width: 120px;"
+					/>
 				</div>
+				<div style="display: flow-root;">
+				<span>Base (segundo elemento):</span>
+					<input 
+						type="text" 
+						v-model="baseNumer"
+						maxlength="2"
+						v-on:keypress="isNumber"
+						style="float:right;width: 120px;"
+					/>
+				</div>
+				<div style="display: flow-root;">
+				<span>Operação:</span>
+					<select style="width:120px;float:right" v-model="calcOperator">
+						<option v-for="(item , index) in calcOperators" v-bind:key="index" :selected= "item == calcOperator" >
+							{{item}}
+						</option>
+					</select>
+				</div>
+				<div style="display: flow-root;">
+				<span>Número de questões:</span>
+					<input 
+						type="text" 
+						v-model="numberOfRows"
+						maxlength="2"
+						v-on:keypress="isNumber"
+						style="float:right;width: 120px;"
+					/>
+				</div>
+				<div style="display: flow-root;">
+				<span>Velocidade:</span>
+					<input 
+						type="range" 
+						v-model="speed"
+						style="float:right"
+						min="1" max="99"
+					/>
+				</div>
+				<button
+					class="btn"
+					@click="SetConfigStorage()"
+				>Salvar</button>
 			</div>
 		</div>
 
@@ -267,5 +276,5 @@ const Stop = ()=>{
 </template>
 
 <style lang="css">
-@import "./App.css";
+	@import "./App.css";
 </style>
