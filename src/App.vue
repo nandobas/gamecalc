@@ -1,6 +1,7 @@
 <script setup>
 import {ref, onMounted} from 'vue'
-import StorageExercices from './pkg/Exercicies/Storage'
+import Simulation from './pkg/Exercicies/Simulation'
+import Storage from './pkg/Exercicies/Storage'
 import Dataset from './pkg/Equation/Dataset'
 
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -19,8 +20,10 @@ const speed = ref(80)
 const calcOperator = ref('+')
 const calcOperators = ref(['+','-','*'])
 
-const simulationStorage = new StorageExercices(maxFirstElement, baseNumer, numberOfRows, calcOperator)
-var SimulationList = simulationStorage.buildSimulationExercicies()
+const simulation = new Simulation(maxFirstElement, baseNumer, numberOfRows, calcOperator)
+var SimulationList = simulation.buildSimulationExercicies()
+
+const storage = new Storage()
 
 const dte = ref(new Dataset());
 var myDataEquation = dte.value
@@ -60,7 +63,7 @@ const ToggleMic = () => {
 		runApp.value = false
 		speechRecognition.stop()
 	} else {
-		SimulationList = simulationStorage.buildSimulationExercicies()
+		SimulationList = simulation.buildSimulationExercicies()
 		actualIndex = 0
 		speechRecognition.start()
 	}
@@ -100,8 +103,8 @@ function onStart() {
 function onEnd() {
   isRecording.value=false
 
-  let userResponse=simulationStorage.buildResponse(actualRow, myDataEquation.userResult)
-  simulationStorage.pushResponse(userResponse)
+  let userResponse=storage.buildResponse(actualRow, myDataEquation.userResult)
+  storage.pushResponse(userResponse)
 
   setTimeout(() => {
     showModal.value=false
@@ -148,9 +151,9 @@ const isNumber = (evt)=>{
 	}
 }
 
-const SetConfigStorage = () =>{
+const SetConfigSimulation = () =>{
 	showConfig.value = false
-	simulationStorage.configStorage(maxFirstElement, baseNumer, numberOfRows, calcOperator)
+	simulation.configSimulation(maxFirstElement, baseNumer, numberOfRows, calcOperator)
 }
 
 function getSpeed(){
@@ -191,7 +194,7 @@ function getSpeed(){
 			<div class="result col6">
 				<div>
 					<ul>
-						<li v-for="linha in simulationStorage.listResponses()" :key="linha.id">
+						<li v-for="linha in storage.listResponses()" :key="linha.id">
 							<div>
 								<div style="width:600px;float:left;display:block;">
 									<span style="display: inline-flex;width: 20px;">{{linha.numberA}}</span> {{linha.calcOperator}} 
@@ -204,7 +207,7 @@ function getSpeed(){
 							</div>
 						</li>
 					</ul>
-					<span>Você acertou: {{simulationStorage.countAsserts}}</span>			
+					<span>Você acertou: {{storage.countAsserts}}</span>			
 				</div>
 			<button
 				class="btn"
@@ -267,7 +270,7 @@ function getSpeed(){
 				</div>
 				<button
 					class="btn"
-					@click="SetConfigStorage()"
+					@click="SetConfigSimulation()"
 				>Salvar</button>
 			</div>
 		</div>
