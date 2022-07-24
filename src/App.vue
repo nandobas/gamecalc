@@ -3,9 +3,10 @@ import {ref, onMounted} from 'vue'
 import Simulation from './pkg/Exercicies/Simulation'
 import Storage from './pkg/Exercicies/Storage'
 import Dataset from './pkg/Equation/Dataset'
+import recognitionservice from './pkg/Recognition/Service'
 
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition
-const speechRecognition = new Recognition()
+const recognitionService = new recognitionservice(window)
+const speechRecognition = recognitionService.getRecognition()
 const isRecording = ref(false)
 const runApp = ref(false)
 const showModal = ref(false);
@@ -32,8 +33,6 @@ myDataEquation.clean()
 var actualIndex = 0
 var actualRow = []
 onMounted(()=>{
-	speechRecognition.continuous = true
-	speechRecognition.interimResults = false
 
 	speechRecognition.onstart = ()=>{
 		onStart()
